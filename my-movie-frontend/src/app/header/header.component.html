@@ -1,0 +1,41 @@
+<div class="movie-header">
+  <div class="overlay"></div>
+  <div class="header-container">
+    <!-- Poster Column -->
+    <div class="poster-column">
+      <div class="poster-container">
+        <div *ngIf="loading" class="loading-spinner">
+          <div class="spinner"></div>
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+
+        <ng-container *ngIf="!loading && !error">
+          <img *ngFor="let movie of movies; let i = index"
+              [src]="movie.poster_path"
+              [class.active]="i === currentPosterIndex"
+              [class.prev]="i === (currentPosterIndex - 1 + movies.length) % movies.length"
+              [alt]="movie.title + ' poster'"
+              class="header-poster">
+        </ng-container>
+      </div>
+    </div>
+
+   <!-- Content Column -->
+   <div class="content-column">
+      <div class="quote-container">
+        <div *ngFor="let quote of quotes; let i = index" 
+            class="quote-item"
+            [class.active]="i === currentQuoteIndex">
+          <p class="movie-quote">{{ quote }}</p>
+          <button class="btn-details" (click)="viewDetails()">
+            Explore Movies <i class="bi bi-film ms-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

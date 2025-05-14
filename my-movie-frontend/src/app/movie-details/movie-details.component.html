@@ -1,0 +1,190 @@
+<div class="movie-container" *ngIf="!loading && movie">
+  <div class="movie-backdrop" [style.background-image]="'linear-gradient(rgba(0, 0, 0, 0.7), rgba(20, 20, 30, 0.95)), url(' + movie.backdrop_path + ')'">
+    <div class="container">
+      <div class="movie-hero">
+        <div class="poster-container">
+          <img [src]="movie.poster_path" alt="{{ movie.title }} poster" class="movie-poster">
+        </div>
+        <div class="movie-info">
+          <button class="btn-back" (click)="goBack()">
+            <i class="bi bi-arrow-left"></i> Back
+          </button>
+          <h1 class="movie-title">{{ movie.title }}</h1>
+          
+          <div class="movie-metadata">
+            <div class="badge rating">
+              <i class="bi bi-star-fill"></i> {{ movie.avg_rating | number:'1.1-1' }}
+              <span class="count">({{ movie.num_ratings | number }})</span>
+            </div>
+            <div class="badge year">
+              <i class="bi bi-calendar3"></i> {{ movie.release_year }}
+            </div>
+            
+            <div class="badge language">
+              <i class="bi bi-translate"></i> {{ movie.language | uppercase }}
+            </div>
+            <div class="badge duration">
+              <i class="bi bi-clock"></i> {{ movie.duration }} mins
+            </div>
+          </div>
+          
+          <div class="genres">
+            {{ movie.genres?.join(' | ') }}
+          </div>
+          
+          <div class="movie-actions" *ngIf="authService.isAuthenticated()">
+            <button class="btn-action watched" (click)="markAsWatched($event)">
+              <i class="bi bi-check-circle"></i>
+              <span class="btn-text">Watched</span>
+              <div class="confirmation">Added!</div>
+            </button>
+            <button class="btn-action to-watch" (click)="markAsToWatch($event)">
+              <i class="bi bi-bookmark-plus"></i>
+              <span class="btn-text">To Watch</span>
+              <div class="confirmation">Added!</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Content Section -->
+  <div class="container">
+    <div class="content-grid">
+      <!-- Left Column -->
+      <div class="main-content">
+        <div class="content-card">
+          <h2 class="section-title">Overview</h2>
+          <p class="overview">{{ movie.overview }}</p>
+        </div>
+        
+        <!-- Rating Section -->
+        <div class="content-card" *ngIf="authService.isAuthenticated()">
+          <h2 class="section-title">Your Rating</h2>
+          <div class="rating-container">
+            <div class="current-rating" *ngIf="userRating !== null">
+              <span class="current-rating-value">{{ userRating }}</span>
+              <span class="rating-label">Your current rating</span>
+            </div>
+            <div class="current-rating" *ngIf="userRating === null">
+              <span class="rating-label">You haven't rated this movie yet</span>
+            </div>
+            
+            <div class="star-rating">
+              <span *ngFor="let star of [1,2,3,4,5]" 
+                    (click)="newRating = star"
+                    [class.filled]="star <= newRating"
+                    [class.has-rating]="userRating !== null && star <= userRating">
+                ★
+              </span>
+            </div>
+            
+            <button class="btn-submit" 
+                    (click)="rateMovie()"
+                    [disabled]="newRating === 0">
+              {{ userRating !== null ? 'Update Rating' : 'Submit Rating' }}
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column for Additional Info -->
+      <div class="side-content">
+        <div class="content-card">
+          <h2 class="section-title">Details</h2>
+          <ul class="details-list">
+            <li *ngIf="movie.director">
+              <span class="detail-label">Director</span>
+              <span class="detail-value">{{ movie.director }}</span>
+            </li>
+            <li *ngIf="movie.release_year">
+              <span class="detail-label">Release Year</span>
+              <span class="detail-value">{{ movie.release_year }}</span>
+            </li>
+            <li *ngIf="movie.budget">
+              <span class="detail-label">Budget</span>
+              <span class="detail-value">${{ movie.budget | number }}</span>
+            </li>
+            <li *ngIf="movie.revenue">
+              <span class="detail-label">Revenue</span>
+              <span class="detail-value">${{ movie.revenue | number }}</span>
+            </li>
+            <li>
+              <span class="detail-label">Original Language</span>
+              <span class="detail-value">{{ movie.language | uppercase }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Recommendations Section -->
+    <div class="recommendations-section" *ngIf="recommendations.length">
+      <h2 class="section-title">Similar Movies You Might Like</h2>
+      <div class="recommendations-container">
+        <div class="scrolling-wrapper">
+          <div *ngFor="let rec of recommendations"
+               class="recommendation-card"
+               (click)="viewMovieDetails(rec.movieId)">
+            <div class="rec-poster-container">
+              <img [src]="rec.poster_path" alt="{{ rec.title }} poster" class="rec-poster">
+              <div class="rec-rating">
+                <i class="bi bi-star-fill"></i> {{ rec.avg_rating | number:'1.1-1' }}
+              </div>
+            </div>
+            <div class="rec-info">
+              <h3 class="rec-title">{{ rec.title }}</h3>
+              <div class="rec-genres" *ngIf="rec.genres && rec.genres.length">
+                <span class="rec-genre">{{ rec.genres[0] }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Hybrid Recommendations -->
+    <div class="recommendations-section" *ngIf="hybridRecommendations.length && !loadingStates.hybrid">
+      <h2 class="section-title">Recommended For You</h2>
+      <div class="recommendations-container">
+        <div class="scrolling-wrapper">
+          <div *ngFor="let rec of hybridRecommendations"
+               class="recommendation-card"
+               (click)="viewMovieDetails(rec.movieId)">
+            <div class="rec-poster-container">
+              <img [src]="rec.poster_path" alt="{{ rec.title }} poster" class="rec-poster">
+              <div class="rec-rating">
+                <i class="bi bi-star-fill"></i> {{ rec.avg_rating | number:'1.1-1' }}
+              </div>
+            </div>
+            <div class="rec-info">
+              <h3 class="rec-title">{{ rec.title }}</h3>
+              <div class="rec-genres" *ngIf="rec.genres && rec.genres.length">
+                <span class="rec-genre">{{ rec.genres[0] }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading movie details...</p>
+  </div>
+</div>
+
+<!-- Error State -->
+<div class="error-container" *ngIf="error && !loading">
+  <div class="error-message-container">
+    <i class="bi bi-exclamation-triangle"></i>
+    <h2>Something went wrong</h2>
+    <p>{{ error }}</p>
+    <button class="btn-back" (click)="goBack()">Go Back</button>
+  </div>
+</div>

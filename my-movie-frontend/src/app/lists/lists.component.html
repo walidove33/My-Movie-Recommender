@@ -1,0 +1,61 @@
+<div class="container list-container">
+  <div class="list-header">
+    <h2 class="list-title">{{ listTitle }}</h2>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading your {{ listTitle }}...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <i class="bi bi-exclamation-triangle error-icon"></i>
+    <h3 class="error-title">Something went wrong</h3>
+    <p class="error-message">{{ error }}</p>
+    <button class="btn-explore" routerLink="/home">
+      Go to Home <i class="bi bi-house"></i>
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && movies.length === 0" class="empty-state">
+    <i class="bi bi-film empty-icon"></i>
+    <p class="empty-text">Your {{ listTitle }} is empty.</p>
+    <a routerLink="/home" class="btn-explore">
+      Explore Movies <i class="bi bi-compass"></i>
+    </a>
+  </div>
+
+  <!-- Content - Movie Grid -->
+  <div *ngIf="!loading && !error && movies.length > 0" class="movie-grid">
+    <div *ngFor="let movie of movies" class="movie-card">
+      <img 
+        [src]="movie.poster_path || 'assets/default-poster.jpg'" 
+        [alt]="movie.title" 
+        class="movie-poster"
+        (error)="($event)"
+      >
+      <div class="card-body">
+        <h5 class="movie-title">{{ movie.title }}</h5>
+        <div class="movie-meta">
+          <span *ngIf="movie.avg_rating" class="meta-badge rating-badge">
+            <i class="bi bi-star-fill"></i> {{ movie.avg_rating | number:'1.1-1' }}
+          </span>
+          <span *ngIf="movie.release_year" class="meta-badge year-badge">
+            <i class="bi bi-calendar3"></i> {{ movie.release_year }}
+          </span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-card btn-details" (click)="viewDetails(movie.movieId)">
+            <i class="bi bi-info-circle"></i> Details
+          </button>
+          <button class="btn-card btn-remove" (click)="removeFromList(movie.movieId); $event.stopPropagation()">
+            <i class="bi bi-trash"></i> Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

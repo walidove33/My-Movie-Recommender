@@ -1,0 +1,86 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/home">
+      <span class="logo-text">My<span class="text-primary">Movie</span></span>
+    </a>
+    
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#mainNav"
+      aria-controls="mainNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home" routerLinkActive="active">
+            <i class="bi bi-house-door"></i>
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/to-watch" routerLinkActive="active">
+            <i class="bi bi-bookmark"></i>
+            <span>Watch List</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/watched" routerLinkActive="active">
+            <i class="bi bi-check2-circle"></i>
+            <span>Watched</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/explore" routerLinkActive="active">
+            <i class="bi bi-compass"></i>
+            <span>Explore</span>
+          </a>
+        </li>
+      </ul>
+      
+      <div class="nav-end">
+        <div class="search-toggle">
+          <button class="btn-icon" aria-label="Search">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+
+        <div *ngIf="authService.isAuthenticated()" ngbDropdown class="user-menu">
+          <button class="user-menu-btn" id="accountDropdown" ngbDropdownToggle>
+            <img [src]="authService.getProfilePicture() || 'assets/default-avatar.jpg'" 
+                 alt="Profile picture"
+                 class="user-avatar"
+                 >
+            <span class="user-name">{{ authService.getUserName() }}</span>
+          </button>
+          <div ngbDropdownMenu aria-labelledby="accountDropdown" class="dropdown-menu-end custom-dropdown">
+            <h6 class="dropdown-header">Account</h6>
+            <a ngbDropdownItem routerLink="/profile">
+              <i class="bi bi-person"></i>
+              <span>Profile</span>
+            </a>
+            <a ngbDropdownItem routerLink="/settings">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <button ngbDropdownItem (click)="logout()" class="logout-item">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+        
+        <a *ngIf="!authService.isAuthenticated()" routerLink="/login" class="btn btn-primary">
+          Sign In
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>

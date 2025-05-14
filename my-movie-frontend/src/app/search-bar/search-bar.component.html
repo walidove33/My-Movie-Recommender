@@ -1,0 +1,116 @@
+<div class="search-container" [class.expanded]="filtersVisible">
+    <div class="search-bar-wrapper">
+      <div class="search-bar">
+        <div class="search-input-container">
+          <i class="bi bi-search search-icon"></i>
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Search for movies, genres, actors..."
+            [ngModel]="filters.title"
+            (input)="onInputChange($event)"
+            (keyup.enter)="onSearch()">
+          <button *ngIf="filters.title" class="clear-search-btn" (click)="filters.title = ''; searchInput.emit('')">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+        
+        <div class="search-controls">
+          <button class="search-btn" (click)="onSearch()">
+            <span>Search</span>
+            <i class="bi bi-search"></i>
+          </button>
+          <button 
+            class="filter-toggle" 
+            [class.active]="filtersVisible" 
+            (click)="onToggleFilters()"
+            aria-label="Toggle filters">
+            <i class="bi bi-sliders"></i>
+            <span class="filter-text">Filters</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Filters Panel -->
+    <div class="filters-panel" *ngIf="filtersVisible">
+      <div class="filters-header">
+        <h3>Refine your search</h3>
+        <button class="clear-filters-btn" (click)="clearFilters()">
+          <i class="bi bi-trash3"></i>
+          <span>Clear all</span>
+        </button>
+      </div>
+  
+      <div class="filter-section">
+        <h4 class="filter-title">Genres</h4>
+        <div class="genre-buttons">
+          <button *ngFor="let genre of allGenres" 
+                  class="genre-btn" 
+                  [class.active]="filters.genres.includes(genre)"
+                  (click)="onToggleGenre(genre)">
+            {{ genre }}
+          </button>
+        </div>
+      </div>
+  
+      <div class="filter-grid">
+        <div class="filter-group">
+          <h4 class="filter-title">Release Year</h4>
+          <div class="range-inputs">
+            <div class="input-with-label">
+              <label for="yearFrom">From</label>
+              <input 
+                type="number" 
+                id="yearFrom"
+                placeholder="1900" 
+                [(ngModel)]="filters.yearFrom">
+            </div>
+            <div class="input-with-label">
+              <label for="yearTo">To</label>
+              <input 
+                type="number" 
+                id="yearTo"
+                placeholder="2025" 
+                [(ngModel)]="filters.yearTo">
+            </div>
+          </div>
+        </div>
+  
+        <div class="filter-group">
+          <h4 class="filter-title">Rating</h4>
+          <div class="range-inputs">
+            <div class="input-with-label">
+              <label for="ratingFrom">Min</label>
+              <input 
+                type="number" 
+                id="ratingFrom"
+                step="0.1" 
+                min="0"
+                max="10"
+                placeholder="0" 
+                [(ngModel)]="filters.ratingFrom">
+            </div>
+            <div class="input-with-label">
+              <label for="ratingTo">Max</label>
+              <input 
+                type="number" 
+                id="ratingTo"
+                step="0.1" 
+                min="0"
+                max="10"
+                placeholder="10" 
+                [(ngModel)]="filters.ratingTo">
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="filters-footer">
+        <button class="apply-filters-btn" (click)="onSearch()">
+          <i class="bi bi-check2-circle"></i>
+          <span>Apply Filters</span>
+        </button>
+      </div>
+    </div>
+  </div>

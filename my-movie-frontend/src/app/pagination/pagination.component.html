@@ -1,0 +1,59 @@
+<nav aria-label="Pagination" class="pagination-container">
+    <ul class="pagination">
+      <!-- Previous Button -->
+      <li class="page-item" [class.disabled]="isFirstPage()">
+        <button 
+          class="page-link page-arrow"
+          aria-label="Previous page"
+          (click)="onPageChange(currentPage - 1)" 
+          [disabled]="isFirstPage()">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+      </li>
+  
+      <!-- First page button with ellipsis if needed -->
+      <ng-container *ngIf="showFirstPageButton()">
+        <li class="page-item">
+          <button class="page-link" (click)="onPageChange(1)">1</button>
+        </li>
+        <li class="page-item disabled" *ngIf="visiblePages[0] > 2">
+          <span class="page-ellipsis">...</span>
+        </li>
+      </ng-container>
+      
+      <!-- Visible page numbers -->
+      <li *ngFor="let page of visiblePages" 
+          class="page-item" 
+          [class.active]="page === currentPage">
+        <button class="page-link" (click)="onPageChange(page)">
+          {{ page }}
+        </button>
+      </li>
+      
+      <!-- Last page button with ellipsis if needed -->
+      <ng-container *ngIf="showLastPageButton()">
+        <li class="page-item disabled" *ngIf="visiblePages[visiblePages.length - 1] < totalPages - 1">
+          <span class="page-ellipsis">...</span>
+        </li>
+        <li class="page-item">
+          <button class="page-link" (click)="onPageChange(totalPages)">{{ totalPages }}</button>
+        </li>
+      </ng-container>
+  
+      <!-- Next Button -->
+      <li class="page-item" [class.disabled]="isLastPage()">
+        <button 
+          class="page-link page-arrow"
+          aria-label="Next page"
+          (click)="onPageChange(currentPage + 1)" 
+          [disabled]="isLastPage()">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </li>
+    </ul>
+    
+    <!-- Page info text -->
+    <div class="page-info">
+      Page {{ currentPage }} of {{ totalPages }}
+    </div>
+  </nav>

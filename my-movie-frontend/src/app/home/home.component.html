@@ -1,0 +1,266 @@
+<div class="container mt-4 pb-12">
+  <div class="search-container">
+    <div class="search-bar">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search movies..."
+        [(ngModel)]="filters.title">
+      <div class="search-controls">
+        <button class="search-btn" (click)="searchMovies()">
+          <i class="bi bi-search"></i>
+        </button>
+        <button class="filter-toggle" (click)="toggleFilters()">
+          <i class="bi bi-funnel"></i>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="filtersVisible" class="filters-panel">
+      <div class="filter-section">
+        <h4>Genres</h4>
+        <div class="genre-buttons">
+          <button *ngFor="let genre of allGenres" 
+                  class="genre-btn" 
+                  [class.active]="filters.genres.includes(genre)"
+                  (click)="toggleGenre(genre)">
+            {{ genre }}
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Release Year</label>
+          <div class="range-inputs">
+            <input type="number" 
+                   placeholder="From" 
+                   [(ngModel)]="filters.yearFrom">
+            <span class="separator">-</span>
+            <input type="number" 
+                   placeholder="To" 
+                   [(ngModel)]="filters.yearTo">
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Rating</label>
+          <div class="range-inputs">
+            <input type="number" 
+                   step="0.1" 
+                   placeholder="Min" 
+                   [(ngModel)]="filters.ratingFrom">
+            <span class="separator">-</span>
+            <input type="number" 
+                   step="0.1" 
+                   placeholder="Max" 
+                   [(ngModel)]="filters.ratingTo">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="searchResults.length" class="mb-5">
+    <h4 class="section-title">Search Results</h4>
+    <div class="scrolling-wrapper">
+      <div *ngFor="let movie of searchResults" 
+           class="movie-card" 
+           (click)="viewMovieDetails(movie.movieId)">
+        <img [src]="movie.poster_path" 
+             alt="{{ movie.title }} poster" 
+             class="movie-poster">
+        <div class="card-body">
+          <h5 class="movie-title">{{ movie.title }}</h5>
+          <div class="movie-info">
+            <span class="rating-badge">
+              <i class="bi bi-star-fill me-1"></i>
+              {{ movie.avg_rating | number:'1.1-1' }}
+            </span>
+            <span class="votes">({{ movie.num_ratings | number }} votes)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="top-rated">
+  <div class="mb-5">
+    <h4 class="section-title">Top Rated Movies</h4>
+    <div *ngIf="loading.topRated" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading top rated movies...</p>
+    </div>
+    <div *ngIf="errors.topRated" class="error-message">
+      {{ errors.topRated }}
+    </div>
+    <div class="scrolling-wrapper" *ngIf="!loading.topRated && topRatedMovies.length">
+      <div *ngFor="let movie of topRatedMovies" 
+           class="movie-card" 
+           (click)="viewMovieDetails(movie.movieId)">
+        <img [src]="movie.poster_path" 
+             alt="{{ movie.title }} poster" 
+             class="movie-poster">
+        <div class="card-body">
+          <h5 class="movie-title">{{ movie.title }}</h5>
+          <div class="movie-info">
+            <span class="rating-badge">
+              <i class="bi bi-star-fill me-1"></i>
+              {{ movie.avg_rating | number:'1.1-1' }}
+            </span>
+            <span class="votes">({{ movie.num_ratings | number }} votes)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+<section id="recommended">
+
+
+  <div class="mb-5">
+    <h4 class="section-title">Recommended For You</h4>
+    <div *ngIf="loading.collaborative" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading personalized recommendations...</p>
+    </div>
+    <div *ngIf="errors.collaborative" class="error-message">
+      {{ errors.collaborative }}
+    </div>
+    <div class="scrolling-wrapper" *ngIf="!loading.collaborative && collaborativeRecommendations.length">
+      <div *ngFor="let movie of collaborativeRecommendations" 
+           class="movie-card" 
+           (click)="viewMovieDetails(movie.movieId)">
+        <img [src]="movie.poster_path" 
+             alt="{{ movie.title }} poster" 
+             class="movie-poster">
+        <div class="card-body">
+          <h5 class="movie-title">{{ movie.title }}</h5>
+          <div class="movie-info">
+            <span class="rating-badge">
+              <i class="bi bi-star-fill me-1"></i>
+              {{ movie.avg_rating | number:'1.1-1' }}
+            </span>
+            <span class="votes">({{ movie.num_ratings | number }} votes)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="recommendedonwatched">
+
+
+
+
+<div class="mb-5">
+  <h4 class="section-title">Based on Your Watched Movies</h4>
+  <div *ngIf="loading.watched" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading recommendations based on your watched history...</p>
+  </div>
+  <div *ngIf="errors.watched" class="error-message">
+    {{ errors.watched }}
+  </div>
+  <div class="scrolling-wrapper" *ngIf="!loading.watched && watchedRecommendations.length">
+    <div *ngFor="let movie of watchedRecommendations" 
+         class="movie-card" 
+         (click)="viewMovieDetails(movie.movieId)">
+      <img [src]="movie.poster_path" 
+           alt="{{ movie.title }} poster" 
+           class="movie-poster">
+      <div class="card-body">
+        <h5 class="movie-title">{{ movie.title }}</h5>
+        <div class="movie-info">
+          <span class="rating-badge">
+            <i class="bi bi-star-fill me-1"></i>
+            {{ movie.avg_rating | number:'1.1-1' }}
+          </span>
+          <span class="votes">({{ movie.num_ratings | number }} votes)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</section>
+
+
+
+
+<section id="All">
+
+
+
+  <div class="mb-5">
+    <h4 class="section-title">All Movies</h4>
+    <div *ngIf="loading.allMovies" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading movies...</p>
+    </div>
+    <div *ngIf="errors.allMovies" class="error-message">
+      {{ errors.allMovies }}
+    </div>
+    <div class="movie-grid" *ngIf="!loading.allMovies && allMovies.length">
+      <div *ngFor="let movie of allMovies" 
+           class="movie-card" 
+           (click)="viewMovieDetails(movie.movieId)">
+        <img [src]="movie.poster_path" 
+             alt="{{ movie.title }} poster" 
+             class="movie-poster"
+             (error)="($event)">
+        <div class="card-body">
+          <h5 class="movie-title">{{ movie.title }}</h5>
+          <div class="movie-info">
+            <span class="rating-badge">
+              <i class="bi bi-star-fill me-1"></i>
+              {{ movie.avg_rating | number:'1.1-1' }}
+            </span>
+            <span class="votes">({{ movie.num_ratings | number }} votes)</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+<nav *ngIf="totalPages > 1" aria-label="Pagination" class="mt-4">
+  <ul class="pagination justify-content-center">
+
+    <li class="page-item" [class.disabled]="currentPage === 1">
+      <button 
+        class="page-link" 
+        (click)="loadPage(currentPage - 1)" 
+        [disabled]="currentPage === 1">
+        Précédent
+      </button>
+    </li>
+
+    <li *ngFor="let p of pages" 
+        class="page-item" 
+        [class.active]="p === currentPage">
+      <button class="page-link" (click)="loadPage(p)">
+        {{ p }}
+      </button>
+    </li>
+
+    <li class="page-item" [class.disabled]="currentPage === totalPages">
+      <button 
+        class="page-link" 
+        (click)="loadPage(currentPage + 1)" 
+        [disabled]="currentPage === totalPages">
+        Suivant
+      </button>
+    </li>
+
+  </ul>
+</nav>
+
+</section>
+
+</div>
+

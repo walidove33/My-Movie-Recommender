@@ -1,0 +1,102 @@
+<div class="profile-container">
+    <div class="profile-card">
+      <div class="profile-header">
+        <h1>My Profile</h1>
+        <div class="profile-picture-container">
+          <div class="profile-picture">
+            <img [src]="profilePicture || 'assets/default-avatar.jpg'" 
+                 alt="Profile picture"
+                 >
+            <label class="upload-overlay" for="profile-upload">
+              <i class="bi bi-camera"></i>
+              <span>Change Photo</span>
+            </label>
+          </div>
+          <input 
+            type="file" 
+            id="profile-upload" 
+            (change)="handleFileInput($event)"
+            accept="image/*"
+            class="visually-hidden">
+        </div>
+      </div>
+  
+      <form (ngSubmit)="onSubmit()" #f="ngForm" class="profile-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input
+              id="firstName"
+              name="firstName"
+              [(ngModel)]="profile.firstName"
+              required
+              class="form-input">
+          </div>
+  
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input
+              id="lastName"
+              name="lastName"
+              [(ngModel)]="profile.lastName"
+              required
+              class="form-input">
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="profile.email"
+            required
+            class="form-input">
+        </div>
+  
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input
+            id="phone"
+            name="phone"
+            [(ngModel)]="profile.phone"
+            pattern="^(0\d{9}|\+\d{12})$"
+            class="form-input"
+            required>
+          <div class="form-hint">
+            Format: 10 digits starting with 0, or + followed by 12 digits
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea
+            id="address"
+            name="address"
+            [(ngModel)]="profile.address"
+            maxlength="200"
+            rows="3"
+            class="form-input"></textarea>
+        </div>
+  
+        <div class="message-container">
+          <div *ngIf="errorMessage" class="error-message">
+            <i class="bi bi-exclamation-circle"></i>
+            {{ errorMessage }}
+          </div>
+          <div *ngIf="successMessage" class="success-message">
+            <i class="bi bi-check-circle"></i>
+            {{ successMessage }}
+          </div>
+        </div>
+  
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="f.invalid">
+            <i class="bi bi-check2"></i>
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
